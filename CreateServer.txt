@@ -1,0 +1,72 @@
+////////////////////////////////////////////////////////////////////////////////////
+Xây dựng 1 con server
+
+B1: Tạo file package.json
+    npm init --yes
+B2: Cài express
+    npm install express body-parser --save
+B3: Tạo file server/server.js
+    const express = require('express')
+    const bodyParser = require('body-parser')
+
+    const PORT = 3000
+
+    const app = express()
+
+    app.use('/',function(req, res){
+        res.send('Hello from server')
+    })
+
+    app.listen(PORT, function(){
+        console.log('Sever running on localhost:' + PORT)
+    })
+B4: Tạo file server/routes/api.js
+    const express = require('express')
+    const router = express.Router()
+
+    router.get('/',(req, res)=>{
+        res.send('From API router')
+    })
+
+    module.exports = router
+B5: Mở file server.js thêm
+    const api = require('./routes/api')
+    app.use('/api', api)
+B6: Cài mongooser
+    npm install --save mongoose@5.0.9
+B7: Tạo file server/models/user.js
+    const mongoose = require('mongoose')
+
+    const Schema = mongoose.Schema
+    const userShema = new Schema({
+        email: String,
+        password: String
+    })
+
+    module.exports = mongoose.model('user', userShema, 'users')
+B8: Mở file api.js thêm
+    const mongoose = require('mongoose')
+    const db = "mongodb://nguyenvantai:07103866831tai@ds157864.mlab.com:57864/enventsdb"
+
+    mongoose.connect(db, err =>{
+        if(err)
+        {
+            console.error('Error!' + err)
+        }
+        else
+        {
+            console.log('Connect to mongodb')
+        }
+    })
+B9: Mở file api.js thêm
+    router.post('/register',(req, res)=>{
+        let userData = req.body
+        let user = new User(userData)
+        user.save((error, registeredUser)=>{
+            if(error){
+                console.log(error)
+            }else{
+                res.status(200).send(registeredUser)
+            }
+        })
+    })
